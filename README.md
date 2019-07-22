@@ -25,22 +25,24 @@ https://mtcextendee.com/plugins
 
 ## Usage
 
-1, Setup plugin
+### Create imports from directory
 
-1, See new item on left menu:
+Command: `php app/console mautic:import:directory`
 
-![image](https://user-images.githubusercontent.com/462477/61192212-1567ed00-a6b3-11e9-971e-eb3ab3df6beb.png)
+Setup in plugin settings 
+- **Template from existed import** - it's import from history which is used as template. Especially config (especially parsers config and matched contact fields)
+- **Path to directory with CSV files**. It's server path where you can store unlimited CSV files
 
-2, Setup SQL conditions
+Command read this directory and create standard import from CSV with settings from template.
 
-3, Parameters for SQL
+### Run parallel import process
 
-- :contactId
-- :campaignId
-- :eventId
-- :rotation
+Command: `php app/console mautic:import:parallel`
 
-4, Condition return true If there is results
+First, increase **para*llel_import_limit** in app/config/local.php. Don't forgot clear cache (app/cache/prod/)
+This option allow run parallel import process by command
+
+Each command in parallel processes import 1000 contacts by default. You can change it in plugin settings (Import records limit)
 
 ## Credits
 
