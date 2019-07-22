@@ -52,15 +52,6 @@ class  ImportListType extends AbstractType
         $resolver->setDefaults([
             'choices' => function (Options $options) {
                 $entities  = $this->importModel->getRepository()->getEntities([
-                    'filter'           => [
-                        'force' => [
-                            [
-                                'column' => 'i.isPublished',
-                                'expr'   => 'eq',
-                                'value'  => true,
-                            ],
-                        ],
-                    ],
                     'ignore_paginator' => true,
                 ]);
                 $choices = [];

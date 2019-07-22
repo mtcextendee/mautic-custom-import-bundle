@@ -12,35 +12,39 @@
 namespace MauticPlugin\MauticCustomImportBundle\Command;
 
 use Mautic\CoreBundle\Command\ModeratedCommand;
-use Mautic\CoreBundle\Helper\PathsHelper;
-use Mautic\LeadBundle\Model\ImportModel;
+use Mautic\CoreBundle\Helper\ProgressBarHelper;
+use MauticPlugin\MauticCustomImportBundle\Exception\InvalidImportException;
+use MauticPlugin\MauticCustomImportBundle\Import\CustomImportFactory;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\ProcessBuilder;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class ParallelImportCommand extends ModeratedCommand
 {
-    /**
-     * @var ImportModel
-     */
-    private $importModel;
 
     /**
-     * @var PathsHelper
+     * @var TranslatorInterface
      */
-    private $pathsHelper;
+    private $translator;
+
+    /**
+     * @var CustomImportFactory
+     */
+    private $customImportFactory;
 
     /**
      * ParallelImportCommand constructor.
      *
-     * @param ImportModel $importModel
-     * @param PathsHelper $pathsHelper
+     * @param CustomImportFactory $customImportFactory
+     * @param TranslatorInterface $translator
      */
-    public function __construct(ImportModel $importModel, PathsHelper $pathsHelper)
+    public function __construct(CustomImportFactory $customImportFactory, TranslatorInterface $translator)
     {
-        $this->importModel = $importModel;
-        $this->pathsHelper = $pathsHelper;
+        $this->translator          = $translator;
+        $this->customImportFactory = $customImportFactory;
         parent::__construct();
     }
 
@@ -54,11 +58,10 @@ class ParallelImportCommand extends ModeratedCommand
             ->setDescription('Parallel import for Mautic')
             ->setHelp('This command processed parallel imports')
             ->addOption(
-                '--limit',
+                '--output_from_import',
                 null,
-                InputOption::VALUE_OPTIONAL,
-                'Limit lines to import. Default 1000',
-                1000
+                InputOption::VALUE_NONE,
+                'Display output from each mautic:import processes.'
             );
 
         parent::configure();
@@ -74,46 +77,56 @@ class ParallelImportCommand extends ModeratedCommand
             return 0;
         }
 
-        /** @var \Symfony\Bundle\FrameworkBundle\Translation\Translator $translator */
-        $translator = $this->getContainer()->get('translator');
+        try {
+            $processSet = $this->customImportFactory->parallelImport();
+            $this->processParallelCommandsOutput($input, $output, $processSet);
+        } catch (InvalidImportException $importException) {
 
-        $limit         = $input->getOption('limit');
-        $parallelLimit = $this->importModel->getParallelImportLimit();
-        $processSet    = [];
-        for ($i = 0; $i < $parallelLimit; $i++) {
-            $builder = (new ProcessBuilder())
-                ->setPrefix('php')
-                ->add($this->pathsHelper->getSystemPath('app').'/console')
-                ->add('mautic:import')
-                ->add('--limit='.$limit)
-                ->add('--env='.MAUTIC_ENV);;
-
-            $process = $builder->getProcess();
-            $process->start();
-            $processSet[] = $process;
-            sleep(1);
         }
 
-        $output->writeln($translator->trans('mautic.custom.import.csv.import.parallel.start', ['%s'=>$parallelLimit]));
+
+        return 0;
+    }
+
+    private function processParallelCommandsOutput(Input $input, Output $output, array $processSet)
+    {
+        $processCount = count($processSet);
+        if (empty($processCount)) {
+            return;
+        }
+
+        $output->writeln(
+            $this->translator->trans('mautic.custom.import.csv.import.parallel.start', ['%s' => $processCount])
+        );
+
+        $progress = ProgressBarHelper::init($output, count($processSet));
+        $progress->start();
+        $response = [];
         while (!empty($processSet)) {
             foreach ($processSet as $index => &$process) {
                 $process->checkTimeout();
                 // Not running, let's display result
                 if (!$process->isRunning()) {
                     unset($processSet[$index]);
+                    $progress->advance();
                     if (!$process->isSuccessful()) {
-
-                        $output->writeln($translator->trans('mautic.custom.import.csv.import.parallel.fail', ['%s'=>$index+1]));
                         $output->write($process->getErrorOutput());
                     } else {
-                        $output->writeln($translator->trans('mautic.custom.import.csv.import.parallel.sucess',['%s'=>$index+1]));
+                        $response[] = $process->getOutput();
                     }
                 }
             }
-            // Počkáme 100 ms do další kontroly běžících procesů
-            usleep(100000);
+            sleep(1);
         }
 
-        return 0;
+        $progress->finish();
+
+        if ($input->getOption('output_from_import')) {
+            $output->writeln('');
+            foreach ($response as $res) {
+                $output->writeln($res);
+            }
+        }
+
     }
 }

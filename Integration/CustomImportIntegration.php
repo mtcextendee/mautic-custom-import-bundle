@@ -4,6 +4,7 @@ namespace MauticPlugin\MauticCustomImportBundle\Integration;
 
 use Mautic\PluginBundle\Integration\AbstractIntegration;
 use MauticPlugin\MauticCustomImportBundle\Form\Type\ImportListType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -69,6 +70,25 @@ class CustomImportIntegration extends AbstractIntegration
                     'label_attr' => ['class' => 'control-label'],
                     'attr'       => [
                         'class'        => 'form-control',
+                    ],
+                    'constraints' => [
+                        new NotBlank(),
+                    ],
+                ]
+            );
+
+            $builder->add(
+                'limit',
+                NumberType::class,
+                [
+                    'label'      => 'mautic.custom.import.parallel.records.limit',
+                    'label_attr' => ['class' => 'control-label'],
+                    'attr'       => [
+                        'tooltip' => 'mautic.custom.import.parallel.records.limit.tooltip',
+                        'class'        => 'form-control',
+                    ],
+                    'constraints' => [
+                        new NotBlank(),
                     ],
                 ]
             );

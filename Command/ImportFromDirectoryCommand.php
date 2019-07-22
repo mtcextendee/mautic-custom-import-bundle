@@ -13,26 +13,33 @@ namespace MauticPlugin\MauticCustomImportBundle\Command;
 
 use Mautic\CoreBundle\Command\ModeratedCommand;
 use MauticPlugin\MauticCustomImportBundle\Exception\InvalidImportException;
-use MauticPlugin\MauticCustomImportBundle\Import\CustomImport;
+use MauticPlugin\MauticCustomImportBundle\Import\CustomImportFactory;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class ImportFromDirectoryCommand extends ModeratedCommand
 {
-
     /**
-     * @var CustomImport
+     * @var CustomImportFactory
      */
-    private $customImport;
+    private $customImportFactory;
 
     /**
-     * CustomImportCommand constructor.
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * ImportFromDirectoryCommand constructor.
      *
-     * @param CustomImport $customImport
+     * @param CustomImportFactory $customImportFactory
+     * @param TranslatorInterface $translator
      */
-    public function __construct(CustomImport $customImport)
+    public function __construct(CustomImportFactory $customImportFactory, TranslatorInterface $translator)
     {
-        $this->customImport = $customImport;
+        $this->customImportFactory = $customImportFactory;
+        $this->translator = $translator;
         parent::__construct();
     }
 
@@ -58,16 +65,11 @@ class ImportFromDirectoryCommand extends ModeratedCommand
             return 0;
         }
 
-        /** @var \Symfony\Bundle\FrameworkBundle\Translation\Translator $translator */
-        $translator = $this->getContainer()->get('translator');
-
         try {
-            foreach ($this->customImport->getCsvFiles() as $csvFile) {
-                $this->customImport->importFromFile($csvFile);
-                $output->writeln(
-                    $translator->trans('mautic.custom.import.csv.file.import.create', ['%s' => $csvFile->getRealPath()])
-                );
-            }
+            $files = $this->customImportFactory->createImportFromDirectory();
+            $output->writeln(
+                $this->translator->trans('mautic.custom.import.csv.file.import.create', ['%s' => count($files)])
+            );
         } catch (InvalidImportException $importException) {
             $output->writeln($importException->getMessage());
         }
