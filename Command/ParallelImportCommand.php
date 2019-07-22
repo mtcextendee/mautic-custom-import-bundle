@@ -78,16 +78,21 @@ class ParallelImportCommand extends ModeratedCommand
         }
 
         try {
-            $processSet = $this->customImportFactory->parallelImport();
+            $processSet = $this->customImportFactory->processParallelImport();
             $this->processParallelCommandsOutput($input, $output, $processSet);
         } catch (InvalidImportException $importException) {
-
+            $output->writeln($importException->getMessage());
         }
 
 
         return 0;
     }
 
+    /**
+     * @param Input  $input
+     * @param Output $output
+     * @param array  $processSet
+     */
     private function processParallelCommandsOutput(Input $input, Output $output, array $processSet)
     {
         $processCount = count($processSet);

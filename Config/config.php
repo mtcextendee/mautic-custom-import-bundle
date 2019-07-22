@@ -21,6 +21,7 @@ return [
                     'mautic.custom.import.directory',
                     'mautic.custom.import.parallel',
                     'mautic.helper.integration',
+                    'doctrine.orm.entity_manager'
                 ],
             ],
             'mautic.custom.import.directory' => [
@@ -48,6 +49,14 @@ return [
             ],
             'mautic.custom.directory.import.command' => [
                 'class'     => \MauticPlugin\MauticCustomImportBundle\Command\ImportFromDirectoryCommand::class,
+                'arguments' => [
+                    'mautic.custom.import.factory',
+                    'translator'
+                ],
+                'tag' => 'console.command',
+            ],
+            'mautic.custom.remove.tags.command' => [
+                'class'     => \MauticPlugin\MauticCustomImportBundle\Command\RemoveTagsCommand::class,
                 'arguments' => [
                     'mautic.custom.import.factory',
                     'translator'

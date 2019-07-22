@@ -92,6 +92,22 @@ class CustomImportIntegration extends AbstractIntegration
                     ],
                 ]
             );
+
+            $builder->add(
+                'tagsToRemove',
+                'lead_tag',
+                [
+                    'add_transformer' => true,
+                    'by_reference'    => false,
+                    'label' => 'mautic.custom.import.remove.tags',
+                    'attr'            => [
+                        'data-placeholder'     => $this->translator->trans('mautic.lead.tags.select_or_create'),
+                        'data-no-results-text' => $this->translator->trans('mautic.lead.tags.enter_to_create'),
+                        'data-allow-add'       => 'true',
+                        'onchange'             => 'Mautic.createLeadTag(this)',
+                    ],
+                ]
+            );
         }
     }
 
