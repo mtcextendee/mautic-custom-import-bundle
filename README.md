@@ -4,6 +4,7 @@ This plugin allow
 
 - create imports from CSV files from directory
 - run parallel import process by command
+- remove tags by command
 
 ## Support
 
@@ -43,6 +44,14 @@ First, increase **para*llel_import_limit** in app/config/local.php. Don't forgot
 This option allow run parallel import process by command
 
 Each command in parallel processes import 1000 contacts by default. You can change it in plugin settings (Import records limit)
+
+### Remove tags by command
+
+Command: `php app/console mautic:remove:tags`
+
+If you want tag your contacts by import, then before import you are able to remove tag.
+Just setup tags in plugin settings and call command
+
 
 ## Credits
 
