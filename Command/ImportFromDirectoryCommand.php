@@ -73,6 +73,7 @@ class ImportFromDirectoryCommand extends ModeratedCommand
         } catch (InvalidImportException $importException) {
             $output->writeln($importException->getMessage());
         }
+        $this->completeRun();
 
         return 0;
     }

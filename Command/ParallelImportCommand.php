@@ -83,9 +83,6 @@ class ParallelImportCommand extends ModeratedCommand
         } catch (InvalidImportException $importException) {
             $output->writeln($importException->getMessage());
         }
-
-
-        return 0;
     }
 
     /**
@@ -115,7 +112,7 @@ class ParallelImportCommand extends ModeratedCommand
                     unset($processSet[$index]);
                     $progress->advance();
                     if (!$process->isSuccessful()) {
-                        $output->write($process->getErrorOutput());
+                        $output->writeln($process->getErrorOutput());
                     } else {
                         $response[] = $process->getOutput();
                     }
@@ -133,5 +130,8 @@ class ParallelImportCommand extends ModeratedCommand
             }
         }
 
+        $this->completeRun();
+
+        return 0;
     }
 }

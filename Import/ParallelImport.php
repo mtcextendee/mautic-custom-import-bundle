@@ -41,7 +41,8 @@ class ParallelImport
             }
             $builder = (new ProcessBuilder())
                 ->setPrefix('php')
-                ->add($this->pathsHelper->getSystemPath('app').'/console')
+                ->setTimeout(9999)
+                ->add($this->pathsHelper->getSystemPath('app', true).'/console')
                 ->add('mautic:import')
                 ->add('--limit='.$options['limit'])
                 ->add('--env='.MAUTIC_ENV);;
