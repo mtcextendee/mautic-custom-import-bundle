@@ -40,7 +40,7 @@ Command read this directory and create standard import from CSV with settings fr
 
 Command: `php app/console mautic:import:parallel`
 
-First, increase **para*llel_import_limit** in app/config/local.php. Don't forgot clear cache (app/cache/prod/)
+First, increase **parallel_import_limit** in app/config/local.php. Don't forgot clear cache (app/cache/prod/)
 This option allow run parallel import process by command
 
 Each command in parallel processes import 1000 contacts by default. You can change it in plugin settings (Import records limit)
