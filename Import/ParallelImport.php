@@ -50,7 +50,7 @@ class ParallelImport
             $process = $builder->getProcess();
             $process->start();
             $processSet[] = $process;
-            sleep(1);
+            sleep(5);
         }
 
         return $processSet;

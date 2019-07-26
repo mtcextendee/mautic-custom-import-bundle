@@ -78,7 +78,7 @@ class ImportFromDirectory
         // Create an import object
         $import = new Import();
         $import
-            ->setMatchedFields($importTemplate->getMatchedFields())
+            ->setProperties($importTemplate->getProperties())
             ->setDefault('owner', null)
             ->setHeaders($importTemplate->getHeaders())
             ->setParserConfig($importTemplate->getParserConfig())
@@ -88,7 +88,6 @@ class ImportFromDirectory
             ->setOriginalFile($file->getFilename())
             ->setStatus($import::QUEUED);
         $this->importModel->saveEntity($import);
-        sleep(1);
     }
 
     /**

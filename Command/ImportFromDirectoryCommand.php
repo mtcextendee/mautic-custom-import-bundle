@@ -68,10 +68,13 @@ class ImportFromDirectoryCommand extends ModeratedCommand
         try {
             $files = $this->customImportFactory->createImportFromDirectory();
             $output->writeln(
-                $this->translator->trans('mautic.custom.import.csv.file.import.create', ['%s' => count($files)])
+                sprintf(
+                    "<info>%s</info>",
+                    $this->translator->trans('mautic.custom.import.csv.file.import.create', ['%s' => count($files)])
+                )
             );
         } catch (InvalidImportException $importException) {
-            $output->writeln($importException->getMessage());
+            $output->writeln(sprintf("<error>%s</error>", $importException->getMessage()));
         }
         $this->completeRun();
 

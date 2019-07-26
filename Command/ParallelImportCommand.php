@@ -72,17 +72,13 @@ class ParallelImportCommand extends ModeratedCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $key = __CLASS__;
-        if (!$this->checkRunStatus($input, $output, $key)) {
-            return 0;
-        }
-
         try {
             $processSet = $this->customImportFactory->processParallelImport();
             $this->processParallelCommandsOutput($input, $output, $processSet);
         } catch (InvalidImportException $importException) {
             $output->writeln($importException->getMessage());
         }
+        return 0;
     }
 
     /**
@@ -98,7 +94,10 @@ class ParallelImportCommand extends ModeratedCommand
         }
 
         $output->writeln(
-            $this->translator->trans('mautic.custom.import.csv.import.parallel.start', ['%s' => $processCount])
+            sprintf(
+                "<info>%s</info>",
+                $this->translator->trans('mautic.custom.import.csv.import.parallel.start', ['%s' => $processCount])
+            )
         );
 
         $progress = ProgressBarHelper::init($output, count($processSet));
@@ -112,7 +111,7 @@ class ParallelImportCommand extends ModeratedCommand
                     unset($processSet[$index]);
                     $progress->advance();
                     if (!$process->isSuccessful()) {
-                        $output->writeln($process->getErrorOutput());
+                        $output->writeln(sprintf("<error>%s</error>", $process->getErrorOutput()));
                     } else {
                         $response[] = $process->getOutput();
                     }
@@ -129,9 +128,5 @@ class ParallelImportCommand extends ModeratedCommand
                 $output->writeln($res);
             }
         }
-
-        $this->completeRun();
-
-        return 0;
     }
 }
