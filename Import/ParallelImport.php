@@ -36,8 +36,8 @@ class ParallelImport
         $parallelLimit = $this->importModel->getParallelImportLimit();
         $processSet    = [];
         for ($i = 0; $i < $parallelLimit; $i++) {
-            if (!$this->importModel->checkParallelImportLimit()) {
-                break;
+            if (!$this->importModel->getImportToProcess() || !$this->importModel->checkParallelImportLimit()) {
+                continue;
             }
             $builder = (new ProcessBuilder())
                 ->setPrefix('php')

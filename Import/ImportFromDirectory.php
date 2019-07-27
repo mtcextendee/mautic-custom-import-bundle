@@ -54,6 +54,7 @@ class ImportFromDirectory
         $this->fileSystem         = new Filesystem();
         foreach ($files as $file) {
             $this->importFromFile($file, $importTemplate);
+            sleep(1);
         }
 
         return $files;
