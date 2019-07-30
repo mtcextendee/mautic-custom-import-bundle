@@ -78,8 +78,12 @@ class ImportFromDirectory
 
         // Create an import object
         $import = new Import();
+        $properties = $importTemplate->getProperties();
+        if (isset($properties['line'])) {
+            unset($properties['line']);
+        }
         $import
-            ->setProperties($importTemplate->getProperties())
+            ->setProperties($properties)
             ->setDefault('owner', null)
             ->setHeaders($importTemplate->getHeaders())
             ->setParserConfig($importTemplate->getParserConfig())
