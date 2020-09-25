@@ -14,7 +14,7 @@ https://mtcextendee.com/plugins
 
 ### Command line
 - `composer require mtcextendee/mautic-custom-import-bundle`
-- `php app/console mautic:plugins:reload`
+- `php bin/console mautic:plugins:reload`
 -  Go to /s/plugins and setup CustomImport integration
 
 ### Manual 
@@ -28,7 +28,7 @@ https://mtcextendee.com/plugins
 
 ### Create imports from directory
 
-Command: `php app/console mautic:import:directory`
+Command: `php bin/console mautic:import:directory`
 
 Setup in plugin settings 
 - **Template from existed import** - it's import from history which is used as template. Especially config (especially parsers config and matched contact fields)
@@ -38,7 +38,7 @@ Command read this directory and create standard import from CSV with settings fr
 
 ### Run parallel import process
 
-Command: `php app/console mautic:import:parallel`
+Command: `php bin/console mautic:import:parallel`
 
 First, increase **parallel_import_limit** in app/config/local.php. Don't forgot clear cache (app/cache/prod/)
 This option allow run parallel import process by command
@@ -47,7 +47,7 @@ Each command in parallel processes import 1000 contacts by default. You can chan
 
 ### Remove tags by command
 
-Command: `php app/console mautic:remove:tags`
+Command: `php bin/console mautic:remove:tags`
 
 If you want tag your contacts by import, then before import you are able to remove tag.
 Just setup tags in plugin settings and call command

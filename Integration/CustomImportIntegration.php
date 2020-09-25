@@ -2,6 +2,7 @@
 
 namespace MauticPlugin\MauticCustomImportBundle\Integration;
 
+use Mautic\LeadBundle\Form\Type\TagType;
 use Mautic\PluginBundle\Integration\AbstractIntegration;
 use MauticPlugin\MauticCustomImportBundle\Form\Type\ImportListType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -18,6 +19,11 @@ class CustomImportIntegration extends AbstractIntegration
     {
         // should be the name of the integration
         return 'CustomImport';
+    }
+
+    public function getDisplayName()
+    {
+        return 'Custom Import';
     }
 
     /**
@@ -95,7 +101,7 @@ class CustomImportIntegration extends AbstractIntegration
 
             $builder->add(
                 'tagsToRemove',
-                'lead_tag',
+                TagType::class,
                 [
                     'add_transformer' => true,
                     'by_reference'    => false,

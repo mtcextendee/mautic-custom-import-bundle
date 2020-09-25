@@ -57,7 +57,7 @@ class  ImportListType extends AbstractType
                 $choices = [];
                 /** @var Import $entity */
                 foreach ($entities as $entity) {
-                    $choices[$entity->getId()] = sprintf("%s (%s)", $entity->getOriginalFile(), $entity->getId());
+                    $choices[sprintf("%s (%s)", $entity->getOriginalFile(), $entity->getId())] = $entity->getId();
                 }
                 return $choices;
             },
